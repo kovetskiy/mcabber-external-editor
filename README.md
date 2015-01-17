@@ -1,5 +1,5 @@
 # Why?
-I hate multi-mode flow. But I love my editor and want use him
+I hate multi-mode flow. But I love my editor and want use it
 everywhere.
 
 # Installation
