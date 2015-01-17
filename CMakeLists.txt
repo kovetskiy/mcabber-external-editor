@@ -5,7 +5,7 @@
 
 cmake_minimum_required(VERSION 2.6) 
 project(editor C) 
-set(PROJECT_VERSION "0.0.1")
+set(PROJECT_VERSION "2.1")
 
 find_package(PkgConfig REQUIRED) 
 pkg_check_modules(GLIB REQUIRED glib-2.0) 
@@ -34,7 +34,7 @@ set(CPACK_PACKAGE_NAME mcabber-mod-editor)
 set(CPACK_PACKAGE_VERSION ${PROJECT_VERSION})
 set(CPACK_PACKAGE_VENDOR "kovetskiy")
 set(CPACK_PACKAGE_CONTACT "Egor Kovetskiy <e.kovetskiy@office.ngs.ru>")
-set(CPACK_PACKAGE_DESCRIPTION_SUMMARY "Mcabber module for sending shell command output to buddies")
+set(CPACK_PACKAGE_DESCRIPTION_SUMMARY "Mcabber module for sending messages using your editor")
 set(CPACK_SOURCE_GENERATOR TBZ2)
 set(CPACK_GENERATOR DEB CACHE STRING "Binary package generator, eg DEB, RPM, TGZ, NSIS...")
 set(CPACK_DEBIAN_PACKAGE_SECTION libs)
@@ -48,12 +48,6 @@ set(CPACK_PACKAGE_FILE_NAME "${CPACK_PACKAGE_NAME}_${CPACK_PACKAGE_VERSION}_${CP
 set(CPACK_SOURCE_IGNORE_FILES "/\\\\..*;\\\\.swp;~$;/build/;\\\\.tar\\\\.;\\\\.deb;\\\\.so")
 include(CPack)
 
-## AVV build-time dependent requirements
-if(HAVE_MCABBER_editor_ID)
-	set(AVV_COMMANDS_VERSION "commands:5 | commands:4 | commands:3")
-else()
-	set(AVV_COMMANDS_VERSION "commands:2 | commands:1")
-endif()
 configure_file(editor.avv.in editor.avv)
 
 ## Installation

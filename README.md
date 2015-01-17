@@ -8,11 +8,12 @@ $ mkdir build
 $ cd build
 $ cmake ..
 $ make
-$ make install
+# make install
 ```
 
 Add to your mcabberrc
 ```
+set external_editor=/usr/bin/vim
 module load editor
 ```
 
@@ -21,7 +22,8 @@ module load editor
 - mcabber headers
 
 # todo
-- [ ] check on errors
+- [+] check on errors
 - [ ] check editor exit status
 - [x] move to module (like a fifo)
-- [ ] use *arg
+- [ ] add `/esay_to` like a `/say_to`
+- [ ] use $SHELL (which provides to use vim instead of /usr/bin/vim)
