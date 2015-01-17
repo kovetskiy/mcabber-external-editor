@@ -1,0 +1,10 @@
+
+#ifndef LOCAL_CONFIG_H
+#define LOCAL_CONFIG_H
+
+#define PROJECT_VERSION ( "${PROJECT_VERSION}" )
+
+#cmakedefine HAVE_MCABBER_CMD_ID @HAVE_MCABBER_CMD_ID@
+
+#endif
+
