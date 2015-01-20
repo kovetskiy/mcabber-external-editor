@@ -1,4 +1,4 @@
-![whatis](https://cloud.githubusercontent.com/assets/8445924/5816105/8c3dc4f4-a0be-11e4-9fde-b98277db3f03.gif)
+![whatis](https://cloud.githubusercontent.com/assets/8445924/5816239/f8b26134-a0bf-11e4-830f-c8cd676a9aae.gif)
 
 # Why?
 I hate multi-mode flow. But I love my editor and want use it
