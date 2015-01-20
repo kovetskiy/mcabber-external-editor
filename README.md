@@ -1,3 +1,5 @@
+![whatis](https://cloud.githubusercontent.com/assets/8445924/5816105/8c3dc4f4-a0be-11e4-9fde-b98277db3f03.gif)
+
 # Why?
 I hate multi-mode flow. But I love my editor and want use it
 everywhere.
