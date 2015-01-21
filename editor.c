@@ -34,10 +34,6 @@ gchar* get_editor() {
     gchar *editor = (gchar *)settings_opt_get("editor");
 
     if (!editor) {
-        editor = (gchar *)settings_opt_get("external_editor");
-    }
-
-    if (!editor) {
         editor = (gchar *)g_getenv("EDITOR");
     }
 
