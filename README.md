@@ -15,8 +15,16 @@ $ make
 
 Add to your mcabberrc
 ```
-set external_editor=/usr/bin/vim
 module load editor
+```
+
+# Usage
+`/esay` for writing message in your editor.
+
+### Options
+```
+set editor = vim
+set shell = /bin/zsh
 ```
 
 ### Dependencies
@@ -28,4 +36,4 @@ module load editor
 - [ ] check editor exit status
 - [x] move to module (like a fifo)
 - [ ] add `/esay_to` like a `/say_to`
-- [ ] use $SHELL (which provides to use vim instead of /usr/bin/vim)
+- [x] use $SHELL (which provides to use vim instead of /usr/bin/vim)

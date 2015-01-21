@@ -31,13 +31,31 @@ module_info_t info_editor = {
 };
 
 gchar* get_editor() {
-    gchar *editor = (gchar *)settings_opt_get("external_editor");
+    gchar *editor = (gchar *)settings_opt_get("editor");
+
+    if (!editor) {
+        editor = (gchar *)settings_opt_get("external_editor");
+    }
 
     if (!editor) {
         editor = (gchar *)g_getenv("EDITOR");
     }
 
     return editor;
+}
+
+gchar* get_shell() {
+    gchar *shell = (gchar *)settings_opt_get("shell");
+
+    if (!shell) {
+        shell = (gchar *)g_getenv("SHELL");
+    }
+
+    if (!shell) {
+        shell = "/bin/sh";
+    }
+
+    return shell;
 }
 
 gint get_tmp_file(gchar **file_path, GError **err) {
@@ -61,9 +79,13 @@ static void do_esay(char *arg) {
     }
     close(file_tmp);
 
+    gchar *edit_cmd = g_new(gchar, strlen(editor) + strlen(file_path) + 1);
+    g_memmove(edit_cmd, editor, strlen(editor));
+    edit_cmd[strlen(editor)] = ' ';
+    g_memmove(edit_cmd + strlen(editor) + 1, file_path, strlen(file_path));
+
     gchar *spawn_argv[] = {
-        editor,
-        file_path
+        (gchar *)get_shell(), "-c", edit_cmd
     };
 
     gboolean *edit = g_spawn_sync(NULL, spawn_argv, NULL,
