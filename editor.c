@@ -23,7 +23,7 @@ module_info_t info_editor = {
     .branch          = MCABBER_BRANCH,
     .api             = MCABBER_API_VERSION,
     .version         = "2.1",
-    .description     = "Say messages via external editor",
+    .description     = "Say messages using external editor",
     .requires        = NULL,
     .init            = editor_init,
     .uninit          = editor_uninit,
@@ -32,9 +32,12 @@ module_info_t info_editor = {
 
 gchar* get_editor() {
     gchar *editor = (gchar *)settings_opt_get("external_editor");
+
     if (!editor) {
         editor = (gchar *)g_getenv("EDITOR");
     }
+
+    return editor;
 }
 
 gint get_tmp_file(gchar **file_path, GError **err) {
@@ -89,12 +92,12 @@ static void do_esay(char *arg) {
     do_screen_refresh();
 }
 
- void do_say(char *arg) {
+void do_say(char *arg) {
     cmd *saycmd = cmd_get("say");
     saycmd->func(arg);
 }
 
- void do_screen_refresh() {
+void do_screen_refresh() {
     cmd *refresh = cmd_get("screen_refresh");
     refresh->func("");
 }
