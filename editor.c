@@ -71,6 +71,13 @@ static void do_esay(char *arg) {
 
     struct stat temp_file_stat;
     fstat(temp_file_fd, &temp_file_stat);
+
+    if (temp_file_stat.st_size == 0) {
+        scr_LogPrint(LPRINT_NORMAL, "Empty message file, no message sent.");
+        cmd_get("screen_refresh")->func("");
+        return;
+    }
+
     char *message = mmap(
         0, temp_file_stat.st_size, PROT_READ, MAP_PRIVATE, temp_file_fd, 0);
 
