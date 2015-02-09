@@ -8,6 +8,12 @@
  */
 
 #include <string.h>
+#include <unistd.h>
+#include <stdlib.h>
+#include <errno.h>
+#include <sys/wait.h>
+#include <sys/stat.h>
+#include <sys/mman.h>
 
 #include <mcabber/logprint.h>
 #include <mcabber/commands.h>
@@ -22,7 +28,7 @@ static void editor_uninit (void);
 module_info_t info_editor = {
     .branch          = MCABBER_BRANCH,
     .api             = MCABBER_API_VERSION,
-    .version         = "2.1",
+    .version         = "2.2",
     .description     = "Say messages using external editor",
     .requires        = NULL,
     .init            = editor_init,
@@ -30,104 +36,55 @@ module_info_t info_editor = {
     .next            = NULL,
 };
 
-gchar* get_editor() {
-    gchar *editor = (gchar *)settings_opt_get("editor");
+char* get_editor() {
+    char *editor = settings_opt_get("editor");
 
-    if (!editor) {
-        editor = (gchar *)g_getenv("EDITOR");
+    if (editor) {
+        return editor;
+    } else {
+        return getenv("EDITOR");
     }
-
-    return editor;
-}
-
-gchar* get_shell() {
-    gchar *shell = (gchar *)settings_opt_get("shell");
-
-    if (!shell) {
-        shell = (gchar *)g_getenv("SHELL");
-    }
-
-    if (!shell) {
-        shell = "/bin/sh";
-    }
-
-    return shell;
-}
-
-gint get_tmp_file(gchar **file_path, GError **err) {
-    return g_file_open_tmp("mcabber.editor.XXXXXXX", file_path, err);
 }
 
 static void do_esay(char *arg) {
-    GError *err = NULL;
-
-    gchar *editor = get_editor();
+    char *editor = get_editor();
     if (!editor) {
         scr_LogPrint(LPRINT_NORMAL, "Could not find editor");
         return;
     }
 
-    gchar *file_path = NULL;
-    gint file_tmp = get_tmp_file(&file_path, &err);
-    if (file_tmp == -1) {
-        scr_LogPrint(LPRINT_NORMAL, err->message);
-        return;
-    }
-    close(file_tmp);
-
-    gchar *edit_cmd = g_new(gchar, strlen(editor) + strlen(file_path) + 1);
-    g_memmove(edit_cmd, editor, strlen(editor));
-    edit_cmd[strlen(editor)] = ' ';
-    g_memmove(edit_cmd + strlen(editor) + 1, file_path, strlen(file_path));
-
-    gchar *spawn_argv[] = {
-        (gchar *)get_shell(), "-c", edit_cmd
-    };
-
-    gboolean *edit = g_spawn_sync(NULL, spawn_argv, NULL,
-        G_SPAWN_CHILD_INHERITS_STDIN, NULL, NULL, NULL, NULL,
-        NULL, &err);
-    if (!edit) {
-        scr_LogPrint(LPRINT_NORMAL, err->message);
+    char temp_file_path[] = "/tmp/mcabber-XXXXXX";
+    int temp_file_fd = mkstemp(temp_file_path);
+    if (!temp_file_fd) {
+        scr_LogPrint(LPRINT_NORMAL, strerror(errno));
         return;
     }
 
-    GMappedFile *file = g_mapped_file_new(file_path, FALSE, &err);
-    if (file == NULL) {
-        scr_LogPrint(LPRINT_NORMAL, err->message);
-        return;
+    pid_t child = fork();
+    if (child == 0) {
+        execlp(editor, editor, temp_file_path, NULL);
+        scr_LogPrint(LPRINT_NORMAL, strerror(errno));
+    } else {
+        waitpid(child, NULL, 0);
     }
 
-    gint file_size = g_mapped_file_get_length(file);
+    struct stat temp_file_stat;
+    fstat(temp_file_fd, &temp_file_stat);
+    char *message = mmap(
+        0, temp_file_stat.st_size, PROT_READ, MAP_PRIVATE, temp_file_fd, 0);
 
-    gint message_len = file_size + 1;
-    gchar *message = g_new0(gchar, message_len);
-
-    g_memmove(message, g_mapped_file_get_contents(file), file_size);
-    message[message_len - 1] = '\0';
-
-    do_say(message);
-    do_screen_refresh();
+    cmd_get("say")->func(message);
+    cmd_get("screen_refresh")->func("");
+    munmap(message, temp_file_stat.st_size);
+    unlink(temp_file_path);
 }
 
-void do_say(char *arg) {
-    cmd *saycmd = cmd_get("say");
-    saycmd->func(arg);
-}
-
-void do_screen_refresh() {
-    cmd *refresh = cmd_get("screen_refresh");
-    refresh->func("");
-}
-
-static void editor_init(void)
-{
+static void editor_init(void) {
     cmd_add("esay",
         "Say something to the selected buddy using external edtor",
         0, 0, do_esay, NULL);
 }
 
-static void editor_uninit(void)
-{
+static void editor_uninit(void) {
     cmd_del("esay");
 }
