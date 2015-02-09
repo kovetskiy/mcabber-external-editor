@@ -64,6 +64,7 @@ static void do_esay(char *arg) {
     if (child == 0) {
         execlp(editor, editor, temp_file_path, NULL);
         scr_LogPrint(LPRINT_NORMAL, strerror(errno));
+        return;
     } else {
         waitpid(child, NULL, 0);
     }
