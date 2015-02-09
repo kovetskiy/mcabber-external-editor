@@ -19,12 +19,15 @@ module load editor
 ```
 
 # Usage
+
 `/esay` for writing message in your editor.
 
 ### Options
+
+By default, `editor` will be same as `$EDITOR`.
+
 ```
 set editor = vim
-set shell = /bin/zsh
 ```
 
 ### Dependencies
