@@ -35,8 +35,4 @@ set editor = vim
 - mcabber headers
 
 # todo
-- [x] check on errors
-- [ ] check editor exit status
-- [x] move to module (like a fifo)
 - [ ] add `/esay_to` like a `/say_to`
-- [x] use $SHELL (which provides to use vim instead of /usr/bin/vim)
