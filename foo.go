@@ -14,17 +14,6 @@ package editor
 void EditorInit(void);
 void EditorUninit(void);
 
-static module_info_t info_editor = {
-	.branch          = MCABBER_BRANCH,
-	.api             = MCABBER_API_VERSION,
-	.version         = "2.2",
-	.description     = "Say messages using external editor",
-	.requires        = NULL,
-	.init            = EditorInit,
-	.uninit          = EditorUninit,
-	.next            = NULL,
-};
-
 typedef void (*cmdfn) (char*);
 
 void logPrint (char *arg) {
@@ -34,14 +23,22 @@ void logPrint (char *arg) {
 import "C"
 import "unsafe"
 
-func DoEsay(arg *C.char) {
-	C.logPrint(C.CString("AAA"))
+var cDoEsay = DoEsay
+var cEditorInit = EditorInit
+var cEditorUninit = EditorUninit
+
+var info_editor = C.module_info_t{
+	branch:      (*C.gchar)(C.CString(C.MCABBER_BRANCH)),
+	api:         C.MCABBER_API_VERSION,
+	version:     (*C.gchar)(C.CString("2.2")),
+	description: (*C.gchar)(C.CString("Say messages using external editor")),
+	requires:    nil,
+	init:        C.module_init_t(unsafe.Pointer(&cEditorInit)),
+	uninit:      C.module_uninit_t(unsafe.Pointer(&cEditorUninit)),
+	next:        nil,
 }
 
-var cDoEsay = DoEsay
-
 func EditorInit() {
-
 	C.cmd_add(
 		C.CString("esay"),
 		C.CString("Say something to the selected buddy using external editor"),
@@ -50,4 +47,8 @@ func EditorInit() {
 
 func EditorUninit() {
 
+}
+
+func DoEsay(arg *C.char) {
+	C.logPrint(C.CString("AAA"))
 }
