@@ -6,11 +6,8 @@ everywhere.
 
 # Installation
 ```
-$ mkdir build
-$ cd build
-$ cmake ..
 $ make
-# make install
+$ sudo make install
 ```
 
 Add to your mcabberrc
@@ -31,7 +28,6 @@ set editor = vim
 ```
 
 ### Dependencies
-- cmake
 - mcabber headers
 
 # todo
